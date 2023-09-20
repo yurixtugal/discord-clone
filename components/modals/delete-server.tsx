@@ -14,22 +14,22 @@ import { useState } from "react";
 import axios from "axios";
 import { useRouter } from "next/navigation";
 
-const LeaveModal = () => {
+const DeleteModal = () => {
   
   const { isOpen, onClose, type, data, onOpen} = useModal()
   const [isLoading, setIsLoading] = useState(false)
   const router = useRouter();
-  const isModalOpen = isOpen && type === "leaveServer"
+  const isModalOpen = isOpen && type === "deleteServer"
   let { server } = data
   
-  const leaveServer = async () => {
+  const deleteServer = async () => {
     try {
       setIsLoading(true);
-      await axios.patch(`/api/servers/${server?.id}/leave`);
+      await axios.delete(`/api/servers/${server?.id}`);
       setIsLoading(false);
-      router.refresh();
       onClose();
       router.push("/")
+      router.refresh();
     }catch (error) {
       console.log(error)
     }
@@ -40,14 +40,14 @@ const LeaveModal = () => {
         <DialogContent className="bg-white text-black p-0 overflow-hidden">
           <DialogHeader className="pt-8 px-6">
             <DialogTitle className="text-2xl text-center font-bold">
-              Leave server
+              Delete Server 
             </DialogTitle>
           </DialogHeader>
           <DialogDescription className="text-center text-zinc-500">
-            Are you sure you want to leave{" "}
+            Are you sure you want to delete {" "}
             <span className="font-semibold text-indigo-500">
-              {" "}
               {server?.name}
+              {" "}
             </span>
             ?
           </DialogDescription>
@@ -60,7 +60,7 @@ const LeaveModal = () => {
               <Button
                 variant="primary"
                 onClick={() => {
-                  leaveServer();
+                  deleteServer();
                 }}
                 disabled={isLoading}
               >
@@ -73,4 +73,4 @@ const LeaveModal = () => {
     );
 }
  
-export default LeaveModal;
+export default DeleteModal;
