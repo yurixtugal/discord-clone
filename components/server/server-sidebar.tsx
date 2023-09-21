@@ -1,20 +1,49 @@
 import { getCurrentProfile } from "@/lib/current-profile"
 import { db } from "@/lib/db";
-import { Channel, ChannelType, MemberRole } from "@prisma/client";
+import { Channel, ChannelType, Member, MemberRole } from "@prisma/client";
 import { redirect } from "next/navigation";
 import { ServerHeader } from "@/components/server/server-header";
-import { ScrollArea } from "../ui/scroll-area";
-import ServerSearch from "./server-search";
+import { ScrollArea } from "@/components/ui/scroll-area";
+import ServerSearch from "@/components/server/server-search";
 import { memberWithProfile } from "@/types";
 import { Hash, Headphones, ShieldAlert, Video } from "lucide-react";
+import { Separator } from "@/components/ui/separator";
+import ServerSection from "./server-section";
 
 interface serverSidebarProps {
     serverId: string
 }    
 
+interface interfaceToSend {
+  type: ChannelType | MemberRole;
+  detail: {
+    label: string;
+  }[]|undefined;
+}
+
+const prepareDataToSection = (lstSource: Channel[] | Member[] | undefined, sourceType: ChannelType | MemberRole ): interfaceToSend  => {
+  
+  const sourceDetail = lstSource?.map((source) => {
+   if (source as Channel) {
+    return {
+      label: (source as Channel).name,
+    }
+   } else{
+    return {
+      label: (source as memberWithProfile).profile.name,
+    }
+   }
+    
+  })
+  
+  return {
+      type: sourceType,
+      detail: sourceDetail
+  }
+}
 
 const prepareDataToSearch = (
-    textChannels: Channel[] | undefined,
+  textChannels: Channel[] | undefined,
   audioChannels: Channel[] | undefined,
   videoChannels: Channel[] | undefined,
   members: memberWithProfile[] | undefined
@@ -90,6 +119,11 @@ export const ServerSidebar = async ({
 
     const dataToSearch = prepareDataToSearch(textChannels,audioChannels,videoChannels,members);
 
+    const textChannelsToSend = prepareDataToSection(textChannels, ChannelType.TEXT)
+    const audioChannelsToSend = prepareDataToSection(audioChannels, ChannelType.AUDIO)
+    const videoChannelsToSend = prepareDataToSection(videoChannels, ChannelType.VIDEO)
+    const membersToSend = prepareDataToSection(members, MemberRole.GUEST)
+
     if (!server) {
         return redirect("/")
     }
@@ -103,7 +137,25 @@ export const ServerSidebar = async ({
           <div className="mt-2">
             <ServerSearch data={dataToSearch}/>
           </div>
+          <Separator className="h-[2px] bg-zinc-300 dark:bg-zinc-700 w-full rounded-md mx-auto my-4"/>
+          {!!textChannels?.length && (
+            <ServerSection data={textChannelsToSend} />
+          )  }
+
+          {!!audioChannels?.length && (
+            <ServerSection data={audioChannelsToSend} />
+          )  }
+
+          {!!videoChannels?.length && (
+            <ServerSection data={videoChannelsToSend} />
+          )  }
+
+          {!!members?.length && (
+            <ServerSection data={membersToSend} />
+          )  }
         </ScrollArea>
+        
       </div>
     );
 }
+

@@ -65,11 +65,11 @@ const ServerSearch = ({data}: ServerSearchProps) => {
                 <CommandGroup heading={dataInput.label}>
                   {dataInput.detail?.map((detail) => (
                     <CommandItem key={detail.id}>
-                      { detail.type === MemberRole.ADMIN || detail.type === MemberRole.MODERATOR || detail.type === MemberRole.GUEST ? iconMapRoles[detail.type] : iconMapGroups[detail.type]}{' '}<span>{detail.label}</span>
+                      { detail.type === MemberRole.ADMIN || detail.type === MemberRole.MODERATOR || detail.type === MemberRole.GUEST ? iconMapRoles[detail.type] : iconMapGroups[detail.type]}{' '}<span key={`${detail.id}_span`} >{detail.label}</span>
                     </CommandItem>
                   ))}
                 </CommandGroup>
-                <CommandSeparator />
+                <CommandSeparator  />
               </>
             ))}
           </CommandList>
