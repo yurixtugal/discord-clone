@@ -1,6 +1,12 @@
 import { getCurrentProfile } from "@/lib/current-profile";
 import { db } from "@/lib/db";
-import { Channel, ChannelType, Member, MemberRole } from "@prisma/client";
+import {
+  Channel,
+  ChannelType,
+  Member,
+  MemberRole,
+  Server,
+} from "@prisma/client";
 import { redirect } from "next/navigation";
 import { ServerHeader } from "@/components/server/server-header";
 import { ScrollArea } from "@/components/ui/scroll-area";
@@ -16,6 +22,7 @@ interface serverSidebarProps {
 
 interface interfaceToSend {
   type: ChannelType | MemberRole;
+  server: Server;
   detail:
     | {
         label: string;
@@ -25,7 +32,8 @@ interface interfaceToSend {
 
 const prepareDataToSection = (
   lstSource: Channel[] | Member[] | undefined,
-  sourceType: ChannelType | MemberRole
+  sourceType: ChannelType | MemberRole,
+  server: Server
 ): interfaceToSend => {
   const isMember =
     sourceType === MemberRole.ADMIN ||
@@ -46,6 +54,7 @@ const prepareDataToSection = (
 
   return {
     type: sourceType,
+    server: server,
     detail: sourceDetail,
   };
 };
@@ -141,17 +150,24 @@ export const ServerSidebar = async ({ serverId }: serverSidebarProps) => {
 
   const textChannelsToSend = prepareDataToSection(
     textChannels,
-    ChannelType.TEXT
+    ChannelType.TEXT,
+    server as Server
   );
   const audioChannelsToSend = prepareDataToSection(
     audioChannels,
-    ChannelType.AUDIO
+    ChannelType.AUDIO,
+    server as Server
   );
   const videoChannelsToSend = prepareDataToSection(
     videoChannels,
-    ChannelType.VIDEO
+    ChannelType.VIDEO,
+    server as Server
   );
-  const membersToSend = prepareDataToSection(members, MemberRole.GUEST);
+  const membersToSend = prepareDataToSection(
+    members,
+    MemberRole.GUEST,
+    server as Server
+  );
   console.log(members);
 
   if (!server) {

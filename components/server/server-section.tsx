@@ -1,4 +1,6 @@
-import { ChannelType, MemberRole } from "@prisma/client";
+"use client"
+
+import { ChannelType, MemberRole, Server } from "@prisma/client";
 import {
   Delete,
   Edit,
@@ -20,6 +22,7 @@ import {
 } from "@/components/ui/tooltip";
 
 import { Avatar, AvatarImage } from "../ui/avatar";
+import { useModal } from "@/hooks/use-modal-store";
 
 const mapTitle = {
   [ChannelType.TEXT]: "TEXT CHANNELS",
@@ -44,6 +47,7 @@ const iconMapGroups = {
 interface serverSectionProps {
   data: {
     type: ChannelType | MemberRole;
+    server: Server;
     detail:
       | {
           label: string;
@@ -54,6 +58,8 @@ interface serverSectionProps {
 }
 
 const ServerSection = ({ data }: serverSectionProps) => {
+
+  const {onOpen} = useModal()
   return (
     <>
       <div className="  font-semibold text-sm text-zinc-500/80 m-2 flex gap-x-2 justify-between">
@@ -61,13 +67,27 @@ const ServerSection = ({ data }: serverSectionProps) => {
         {data.type === ChannelType.TEXT ||
         data.type === ChannelType.AUDIO ||
         data.type === ChannelType.VIDEO ? (
-          <button>
-            <Plus className=" h-4 w-4 text-zinc-500 hover:text-zinc-600 dark:text-zinc-400 dark:hover:text-zinc-300 transition" />
-          </button>
+          <TooltipProvider>
+            <Tooltip>
+              <TooltipTrigger>
+                <button onClick={()=>onOpen("createChannel",{server: data.server})}>
+                  <Plus className=" h-4 w-4 text-zinc-500 hover:text-zinc-600 dark:text-zinc-400 dark:hover:text-zinc-300 transition" />
+                </button>
+              </TooltipTrigger>
+              <TooltipContent>Create Channel</TooltipContent>
+            </Tooltip>
+          </TooltipProvider>
         ) : (
-          <button>
-            <Settings className=" h-4 w-4 text-zinc-500 hover:text-zinc-600 dark:text-zinc-400 dark:hover:text-zinc-300 transition" />
-          </button>
+          <TooltipProvider>
+            <Tooltip>
+              <TooltipTrigger>
+                <button onClick={()=>onOpen("members",{server: data.server})}>
+                  <Settings className=" h-4 w-4 text-zinc-500 hover:text-zinc-600 dark:text-zinc-400 dark:hover:text-zinc-300 transition" />
+                </button>
+              </TooltipTrigger>
+              <TooltipContent>Manage members</TooltipContent>
+            </Tooltip>
+          </TooltipProvider>
         )}
       </div>
       <div className="my-4 mx-4 font-semibold text-sm text-zinc-400">
