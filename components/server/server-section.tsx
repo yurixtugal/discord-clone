@@ -11,6 +11,14 @@ import {
   Trash,
   Video,
 } from "lucide-react";
+
+import {
+  Tooltip,
+  TooltipContent,
+  TooltipProvider,
+  TooltipTrigger,
+} from "@/components/ui/tooltip";
+
 import { Avatar, AvatarImage } from "../ui/avatar";
 
 const mapTitle = {
@@ -76,8 +84,22 @@ const ServerSection = ({ data }: serverSectionProps) => {
             )}
             <span>{detail.label}</span>
             <div className="ml-auto flex">
-              <Edit className="mr-1 hidden group-hover:block w-4 h-4 text-zinc-500 hover:text-zinc-600 dark:text-zinc-400 dark:hover:text-zinc-300 transition" />
-              <Trash className="hidden group-hover:block w-4 h-4 text-zinc-500 hover:text-zinc-600 dark:text-zinc-400 dark:hover:text-zinc-300 transition" />
+              <TooltipProvider>
+                <Tooltip>
+                  <TooltipTrigger>
+                    <Edit className="mr-1 hidden group-hover:block w-4 h-4 text-zinc-500 hover:text-zinc-600 dark:text-zinc-400 dark:hover:text-zinc-300 transition" />
+                  </TooltipTrigger>
+                  <TooltipContent>Edit</TooltipContent>
+                </Tooltip>
+              </TooltipProvider>
+              <TooltipProvider>
+                <Tooltip>
+                  <TooltipTrigger>
+                    <Trash className="hidden group-hover:block w-4 h-4 text-zinc-500 hover:text-zinc-600 dark:text-zinc-400 dark:hover:text-zinc-300 transition" />
+                  </TooltipTrigger>
+                  <TooltipContent>Delete</TooltipContent>
+                </Tooltip>
+              </TooltipProvider>
             </div>
           </button>
         ))}
