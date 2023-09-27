@@ -12,6 +12,7 @@ import {
   Edit,
   Hash,
   Headphones,
+  Lock,
   Plus,
   Settings,
   ShieldAlert,
@@ -66,6 +67,28 @@ interface serverSectionProps {
   };
 }
 
+const isShowEditButtons = (detail: {
+  label: string;
+  source: Channel | memberWithProfile;
+  imageLink?: string;
+}): boolean => {
+  
+  if (detail.imageLink) return false;
+
+  if (isGeneralChannel(detail)) return false;
+  
+  return true;
+}
+
+const isGeneralChannel = (detail: {
+  label: string;
+  source: Channel | memberWithProfile;
+  imageLink?: string;
+}): boolean => {
+  if (detail.label === "general" && (detail.source as Channel).type === ChannelType.TEXT) return true;
+  return false;
+}
+
 const ServerSection = ({ data }: serverSectionProps) => {
   const { onOpen } = useModal();
   return (
@@ -117,6 +140,8 @@ const ServerSection = ({ data }: serverSectionProps) => {
               </Avatar>
             )}
             <span>{detail.label}</span>
+            {!!isShowEditButtons(detail) && (
+            
             <div className="ml-auto flex">
               <TooltipProvider>
                 <Tooltip>
@@ -134,7 +159,19 @@ const ServerSection = ({ data }: serverSectionProps) => {
                   <TooltipContent>Delete</TooltipContent>
                 </Tooltip>
               </TooltipProvider>
-            </div>
+            </div>)}
+            {isGeneralChannel(detail) && (
+              <div className="ml-auto flex">
+              <TooltipProvider>
+                <Tooltip>
+                  <TooltipTrigger>
+                    <Lock className="mr-1 hidden group-hover:block w-4 h-4 text-zinc-500 hover:text-zinc-600 dark:text-zinc-400 dark:hover:text-zinc-300 transition" />
+                  </TooltipTrigger>
+                  <TooltipContent>Block</TooltipContent>
+                </Tooltip>
+              </TooltipProvider>
+            </div>  
+            )}
           </button>
         ))}
       </div>
