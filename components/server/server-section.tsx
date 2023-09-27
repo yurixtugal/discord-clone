@@ -1,6 +1,12 @@
-"use client"
+"use client";
 
-import { ChannelType, MemberRole, Server } from "@prisma/client";
+import {
+  Channel,
+  ChannelType,
+  Member,
+  MemberRole,
+  Server,
+} from "@prisma/client";
 import {
   Delete,
   Edit,
@@ -23,6 +29,7 @@ import {
 
 import { Avatar, AvatarImage } from "../ui/avatar";
 import { useModal } from "@/hooks/use-modal-store";
+import { memberWithProfile } from "@/types";
 
 const mapTitle = {
   [ChannelType.TEXT]: "TEXT CHANNELS",
@@ -51,6 +58,7 @@ interface serverSectionProps {
     detail:
       | {
           label: string;
+          source: Channel | memberWithProfile;
           imageLink?: string;
         }[]
       | undefined;
@@ -58,8 +66,7 @@ interface serverSectionProps {
 }
 
 const ServerSection = ({ data }: serverSectionProps) => {
-
-  const {onOpen} = useModal()
+  const { onOpen } = useModal();
   return (
     <>
       <div className="  font-semibold text-sm text-zinc-500/80 m-2 flex gap-x-2 justify-between">
@@ -70,7 +77,11 @@ const ServerSection = ({ data }: serverSectionProps) => {
           <TooltipProvider>
             <Tooltip>
               <TooltipTrigger>
-                <button onClick={()=>onOpen("createChannel",{server: data.server})}>
+                <button
+                  onClick={() =>
+                    onOpen("createChannel", { server: data.server })
+                  }
+                >
                   <Plus className=" h-4 w-4 text-zinc-500 hover:text-zinc-600 dark:text-zinc-400 dark:hover:text-zinc-300 transition" />
                 </button>
               </TooltipTrigger>
@@ -81,7 +92,9 @@ const ServerSection = ({ data }: serverSectionProps) => {
           <TooltipProvider>
             <Tooltip>
               <TooltipTrigger>
-                <button onClick={()=>onOpen("members",{server: data.server})}>
+                <button
+                  onClick={() => onOpen("members", { server: data.server })}
+                >
                   <Settings className=" h-4 w-4 text-zinc-500 hover:text-zinc-600 dark:text-zinc-400 dark:hover:text-zinc-300 transition" />
                 </button>
               </TooltipTrigger>
@@ -114,7 +127,7 @@ const ServerSection = ({ data }: serverSectionProps) => {
               </TooltipProvider>
               <TooltipProvider>
                 <Tooltip>
-                  <TooltipTrigger>
+                  <TooltipTrigger onClick={()=> onOpen("deleteChannel", { channel: detail.source as Channel })}>
                     <Trash className="hidden group-hover:block w-4 h-4 text-zinc-500 hover:text-zinc-600 dark:text-zinc-400 dark:hover:text-zinc-300 transition" />
                   </TooltipTrigger>
                   <TooltipContent>Delete</TooltipContent>

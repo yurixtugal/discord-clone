@@ -12,7 +12,6 @@ import { ServerHeader } from "@/components/server/server-header";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import ServerSearch from "@/components/server/server-search";
 import { memberWithProfile } from "@/types";
-import { Hash, Headphones, ShieldAlert, Video } from "lucide-react";
 import { Separator } from "@/components/ui/separator";
 import ServerSection from "./server-section";
 
@@ -26,6 +25,7 @@ interface interfaceToSend {
   detail:
     | {
         label: string;
+        source: Channel | memberWithProfile;
       }[]
     | undefined;
 }
@@ -43,11 +43,13 @@ const prepareDataToSection = (
     if (!isMember) {
       return {
         label: (source as Channel).name,
+        source: source as Channel,
       };
     } else {
       return {
         label: (source as memberWithProfile).profile.name,
         imageLink: (source as memberWithProfile).profile.imageUrl,
+        source: source as memberWithProfile,
       };
     }
   });
@@ -168,7 +170,6 @@ export const ServerSidebar = async ({ serverId }: serverSidebarProps) => {
     MemberRole.GUEST,
     server as Server
   );
-  console.log(members);
 
   if (!server) {
     return redirect("/");
