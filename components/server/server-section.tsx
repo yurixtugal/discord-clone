@@ -30,6 +30,7 @@ import {
 import { Avatar, AvatarImage } from "../ui/avatar";
 import { useModal } from "@/hooks/use-modal-store";
 import { memberWithProfile } from "@/types";
+import { Button } from "../ui/button";
 
 const mapTitle = {
   [ChannelType.TEXT]: "TEXT CHANNELS",
@@ -119,7 +120,7 @@ const ServerSection = ({ data }: serverSectionProps) => {
             <div className="ml-auto flex">
               <TooltipProvider>
                 <Tooltip>
-                  <TooltipTrigger>
+                  <TooltipTrigger onClick={()=>onOpen("editChannel",{channel: detail.source as Channel})}>
                     <Edit className="mr-1 hidden group-hover:block w-4 h-4 text-zinc-500 hover:text-zinc-600 dark:text-zinc-400 dark:hover:text-zinc-300 transition" />
                   </TooltipTrigger>
                   <TooltipContent>Edit</TooltipContent>

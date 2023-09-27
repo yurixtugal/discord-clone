@@ -28,6 +28,7 @@ import { Button } from "@/components/ui/button";
 import { useRouter } from "next/navigation";
 import { useModal } from "@/hooks/use-modal-store";
 import { ChannelType } from "@prisma/client";
+import { useEffect } from "react";
 
 
 const formSchema = z.object({
@@ -43,13 +44,13 @@ const formSchema = z.object({
 });
 
 
-const CreateChannelModal = () => {
+const EditChannelModal = () => {
   
   const { isOpen, onClose, type, data} = useModal()
 
-  const { server } = data
+  const { channel } = data
 
-  const isModalOpen = isOpen && type === "createChannel"
+  const isModalOpen = isOpen && type === "editChannel"
 
   const router = useRouter();
 
@@ -57,19 +58,22 @@ const CreateChannelModal = () => {
       resolver: zodResolver(formSchema),
       defaultValues: {
         name: "",
-        type: ChannelType.TEXT,
+        type: channel?.type || ChannelType.TEXT,
       },
     });
 
     const isLoading = form.formState.isSubmitting;
 
+    useEffect(() => {
+      if (channel) {
+        form.setValue("name", channel.name);
+        form.setValue("type", channel.type);
+      }
+    }, [channel, form]);
+
     const onSubmit = async (values: z.infer<typeof formSchema>) => {
       try {
-        const url = qs.stringifyUrl({
-          url: `/api/channels`,
-          query: { serverId: server?.id },
-        });
-        await axios.post(url,values);
+        await axios.patch(`/api/channels/${channel?.id}`,values);
         form.reset();
         router.refresh();
         onClose();
@@ -89,7 +93,7 @@ const CreateChannelModal = () => {
         <DialogContent className="bg-white text-black p-0 overflow-hidden">
           <DialogHeader className="pt-8 px-6">
             <DialogTitle className="text-2xl text-center font-bold">
-              Create your Channel
+              Edit your Channel
             </DialogTitle>
           </DialogHeader>
           <Form {...form}>
@@ -154,7 +158,7 @@ const CreateChannelModal = () => {
               </div>
               <DialogFooter className="bg-gray-100 px-6 py-4">
                 <Button disabled={isLoading} variant="primary">
-                  Create
+                  Save
                 </Button>
               </DialogFooter>
             </form>
@@ -164,4 +168,4 @@ const CreateChannelModal = () => {
     );
 }
  
-export default CreateChannelModal;
+export default EditChannelModal;

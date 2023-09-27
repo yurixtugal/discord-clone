@@ -22,14 +22,13 @@ const DeleteChannelModal = () => {
   const isModalOpen = isOpen && type === "deleteChannel"
   let { channel } = data
   
-  const deleteServer = async () => {
+  const deleteChannel = async () => {
     try {
       setIsLoading(true);
       await axios.delete(`/api/channels/${channel?.id}`);
       setIsLoading(false);
-      onClose();
-      router.push("/")
       router.refresh();
+      onClose();
     }catch (error) {
       console.log(error)
     }
@@ -60,7 +59,7 @@ const DeleteChannelModal = () => {
               <Button
                 variant="primary"
                 onClick={() => {
-                  deleteServer();
+                  deleteChannel();
                 }}
                 disabled={isLoading}
               >
